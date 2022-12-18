@@ -1,10 +1,26 @@
-import asyncio
 import random
 from typing import Optional, List, Tuple
 
 import aiohttp
+from fake_useragent import UserAgent
 
 from py_debank_async import exceptions
+
+
+async def get_headers() -> dict:
+    """
+    Get headers for a request.
+
+    :return dict: headers
+    """
+    return {
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9',
+        'origin': 'https://debank.com',
+        'referer': 'https://debank.com/',
+        'source': 'web',
+        'user-agent': UserAgent().chrome
+    }
 
 
 async def get_proxy(proxy: Optional[str or List[str]] = None) -> Optional[str]:

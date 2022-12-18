@@ -1,10 +1,8 @@
 import asyncio
 from typing import Optional, List, Dict
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Entrypoints, ChainNames, Chain, ProfitLeaderboard, NFTHistory
-from py_debank_async.utils import get_proxy, check_response, async_get
+from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
 async def collection_list(address: str, chain: ChainNames or str = '', raw_data: bool = False,
@@ -27,9 +25,8 @@ async def collection_list(address: str, chain: ChainNames or str = '', raw_data:
         proxy = await get_proxy(proxy=proxies)
         for i in range(3):
             params = {'user_addr': address, 'chain': chain}
-            headers = {'user-agent': UserAgent().chrome}
             status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'collection_list', params=params,
-                                                     headers=headers, proxy=proxy)
+                                                     headers=await get_headers(), proxy=proxy)
             await check_response(status_code=status_code, json_dict=json_dict)
             if json_dict['data']['job']:
                 await asyncio.sleep(3)
@@ -44,9 +41,8 @@ async def collection_list(address: str, chain: ChainNames or str = '', raw_data:
             proxy = await get_proxy(proxy=proxies)
             for i in range(3):
                 params = {'user_addr': address, 'chain': chain}
-                headers = {'user-agent': UserAgent().chrome}
                 status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'collection_list', params=params,
-                                                         headers=headers, proxy=proxy)
+                                                         headers=await get_headers(), proxy=proxy)
                 await check_response(status_code=status_code, json_dict=json_dict)
                 if json_dict['data']['job']:
                     await asyncio.sleep(3)
@@ -83,9 +79,8 @@ async def history_collection_list(address: str, chain: ChainNames or str = '',
         proxy = await get_proxy(proxy=proxies)
         for i in range(3):
             params = {'user_addr': address, 'chain': chain}
-            headers = {'user-agent': UserAgent().chrome}
             status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_collection_list', params=params,
-                                                     headers=headers, proxy=proxy)
+                                                     headers=await get_headers(), proxy=proxy)
             await check_response(status_code=status_code, json_dict=json_dict)
             if json_dict['data']['job']:
                 await asyncio.sleep(3)
@@ -100,9 +95,8 @@ async def history_collection_list(address: str, chain: ChainNames or str = '',
             proxy = await get_proxy(proxy=proxies)
             for i in range(3):
                 params = {'user_addr': address, 'chain': chain}
-                headers = {'user-agent': UserAgent().chrome}
                 status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_collection_list',
-                                                         params=params, headers=headers, proxy=proxy)
+                                                         params=params, headers=await get_headers(), proxy=proxy)
                 await check_response(status_code=status_code, json_dict=json_dict)
                 if json_dict['data']['job']:
                     await asyncio.sleep(3)
@@ -139,7 +133,6 @@ async def history_list(address: str, chain: ChainNames or str = '',
     """
     history_dict = {}
     if chain:
-        proxy = await get_proxy(proxy=proxies)
         params = {
             'user_addr': address,
             'chain': chain,
@@ -149,16 +142,14 @@ async def history_list(address: str, chain: ChainNames or str = '',
             'page_count': '20',
             'direction': '',
         }
-        headers = {'user-agent': UserAgent().chrome}
         status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_list', params=params,
-                                                 headers=headers, proxy=proxy)
+                                                 headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
         await check_response(status_code=status_code, json_dict=json_dict)
         history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_dict['data'])
 
     else:
         chains = await used_chains(address=address, proxies=proxies)
         for chain in chains:
-            proxy = await get_proxy(proxy=proxies)
             params = {
                 'user_addr': address,
                 'chain': chain,
@@ -168,9 +159,8 @@ async def history_list(address: str, chain: ChainNames or str = '',
                 'page_count': '20',
                 'direction': '',
             }
-            headers = {'user-agent': UserAgent().chrome}
             status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_list', params=params,
-                                                     headers=headers, proxy=proxy)
+                                                     headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
             await check_response(status_code=status_code, json_dict=json_dict)
             history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_dict['data'])
 
@@ -186,9 +176,7 @@ async def used_chains(address: str, proxies: Optional[str or List[str]] = None) 
     :return List[str]: chains
     """
     params = {'user_addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'used_chains', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'used_chains', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return json_dict['data']

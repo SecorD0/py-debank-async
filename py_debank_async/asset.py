@@ -1,9 +1,7 @@
 from typing import Optional, List
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Entrypoints, Curve
-from py_debank_async.utils import get_proxy, async_get, check_response
+from py_debank_async.utils import get_proxy, async_get, check_response, get_headers
 
 
 async def net_curve_24h(address: str, proxies: Optional[str or List[str]] = None) -> Curve:
@@ -15,9 +13,7 @@ async def net_curve_24h(address: str, proxies: Optional[str or List[str]] = None
     :return Curve: the address's asset value history for the last 24 hours
     """
     params = {'user_addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.ASSET + 'net_curve_24h', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.ASSET + 'net_curve_24h', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return Curve(data=json_dict['data'])

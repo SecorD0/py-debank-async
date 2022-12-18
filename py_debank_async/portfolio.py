@@ -1,9 +1,7 @@
 from typing import Optional, Dict, List
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Entrypoints, Chain
-from py_debank_async.utils import get_proxy, check_response, async_get
+from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
 async def project_list(address: str, raw_data: bool = False,
@@ -21,10 +19,8 @@ async def project_list(address: str, raw_data: bool = False,
     }
     """
     params = {'user_addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
     status_code, json_dict = await async_get(Entrypoints.PUBLIC.PORTFOLIO + 'project_list', params=params,
-                                             headers=headers, proxy=proxy)
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     chain_dict = {}
     for token in json_dict['data']:

@@ -128,6 +128,13 @@ class Custom:
                 for chain_nft in value.nfts:
                     print(f'\t{chain_nft}')
 
+    @staticmethod
+    async def current_balance_list(address: str) -> None:
+        for key, value in (await custom.current_balance_list(address=address, proxies=proxies)).items():
+            print(f'\n-------------------------------- {key} --------------------------------')
+            for chain_token in value.tokens:
+                print(f'{chain_token}\n')
+
 
 async def main():
     print('\n--------- Asset ---------')
@@ -160,6 +167,7 @@ async def main():
     print('\n--------- Custom ---------')
     await Custom().get_balance(address=checking_address, chain=ChainNames.ARBITRUM)
     await Custom().get_balance(address=checking_address)
+    await Custom().current_balance_list(address=checking_address)
 
 
 if __name__ == '__main__':

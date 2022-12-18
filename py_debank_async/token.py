@@ -1,9 +1,7 @@
 from typing import Optional, List, Dict
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Entrypoints, Chain, ChainNames
-from py_debank_async.utils import get_proxy, check_response, async_get
+from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
 async def balance_list(address: str, chain: ChainNames or str, raw_data: bool = False,
@@ -18,10 +16,8 @@ async def balance_list(address: str, chain: ChainNames or str, raw_data: bool = 
     :return Chain: token balances
     """
     params = {'user_addr': address, 'is_all': 'false', 'chain': chain}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.TOKEN + 'balance_list', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.TOKEN + 'balance_list', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     if raw_data:
         return {chain: json_dict['data']}
@@ -32,7 +28,7 @@ async def balance_list(address: str, chain: ChainNames or str, raw_data: bool = 
 async def cache_balance_list(address: str, raw_data: bool = False,
                              proxies: Optional[str or List[str]] = None) -> Dict[str, Chain] or Dict[str, dict]:
     """
-    Get token balances of an address of all chains.
+    Get cached token balances of an address of all chains (current at the time of the last balance_list queries).
 
     :param str address: the address
     :param bool raw_data: if True, it will return the unprocessed dictionary (False)
@@ -44,10 +40,8 @@ async def cache_balance_list(address: str, raw_data: bool = False,
     }
     """
     params = {'user_addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
     status_code, json_dict = await async_get(Entrypoints.PUBLIC.TOKEN + 'cache_balance_list', params=params,
-                                             headers=headers, proxy=proxy)
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     chain_dict = {}
     for token in json_dict['data']:

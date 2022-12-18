@@ -1,9 +1,11 @@
 from typing import Dict, Optional, List
 
-from py_debank_async.models import Chain, ChainNames
 from py_debank_async import nft
 from py_debank_async import portfolio
 from py_debank_async import token
+from py_debank_async.models import Chain, ChainNames
+from py_debank_async.token import balance_list
+from py_debank_async.user import addr
 
 
 async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: bool = True,
@@ -35,7 +37,7 @@ async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: b
             chains[chain].parse_projects(projects[chain])
 
     else:
-        tokens = await token.cache_balance_list(address=address, proxies=proxies)
+        tokens = await current_balance_list(address=address, proxies=proxies)
         chains.update(tokens)
 
         if parse_nfts:
@@ -57,3 +59,31 @@ async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: b
 
     chains = {key: value for key, value in sorted(chains.items(), key=lambda item: item[1].usd_value, reverse=True)}
     return chains
+
+
+async def current_balance_list(address: str, raw_data: bool = False,
+                               proxies: Optional[str or List[str]] = None) -> Dict[str, Chain] or Dict[str, dict]:
+    """
+    Get current token balances of an address of all chains.
+
+    :param str address: the address
+    :param bool raw_data: if True, it will return the unprocessed dictionary (False)
+    :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
+    :return Dict[str, Chain] or Dict[str, dict]: token balances
+    {
+        'eth': Chain(..., tokens=...),
+        'bsc': Chain(..., tokens=...)
+    }
+    """
+    chain_dict = {}
+    used_chains = (await addr(address=address, proxies=proxies)).used_chains
+    for chain in used_chains:
+        balance = await balance_list(address=address, chain=chain, raw_data=raw_data, proxies=proxies)
+        if balance.tokens:
+            chain_dict[chain] = balance
+
+    if not raw_data:
+        chain_dict = {key: value for key, value in
+                      sorted(chain_dict.items(), key=lambda item: item[1].usd_value, reverse=True)}
+
+    return chain_dict

@@ -1,9 +1,7 @@
 from typing import Optional, List
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Info, User, Entrypoints
-from py_debank_async.utils import get_proxy, check_response, async_get
+from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
 async def addr(address: str, proxies: Optional[str or List[str]] = None) -> User:
@@ -15,10 +13,8 @@ async def addr(address: str, proxies: Optional[str or List[str]] = None) -> User
     :return User: the DeBank user
     """
     params = {'addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'addr', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'addr', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return User(data=json_dict['data'])
 
@@ -32,10 +28,8 @@ async def info(address: str, proxies: Optional[str or List[str]] = None) -> Info
     :return Info: the information about the DeBank user
     """
     params = {'id': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
     status_code, json_dict = await async_get(Entrypoints.PUBLIC.ENTRYPOINT + 'hi/user/info', params=params,
-                                             headers=headers, proxy=proxy)
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return Info(data=json_dict['data'])
 
@@ -49,9 +43,7 @@ async def total_balance(address: str, proxies: Optional[str or List[str]] = None
     :return float: the total balance
     """
     params = {'addr': address}
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'total_balance', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'total_balance', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return json_dict['data']['total_usd_value']

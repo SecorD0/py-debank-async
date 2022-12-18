@@ -1,9 +1,7 @@
 from typing import Optional, List
 
-from fake_useragent import UserAgent
-
 from py_debank_async.models import Entrypoints, History, ChainNames
-from py_debank_async.utils import get_proxy, async_get, check_response
+from py_debank_async.utils import get_proxy, async_get, check_response, get_headers
 
 
 async def list_(address: str, chain: ChainNames or str = '', start_time: int or str = 0,
@@ -21,10 +19,8 @@ async def list_(address: str, chain: ChainNames or str = '', start_time: int or 
     data = {}
     if page_count <= 20:
         params = {'user_addr': address, 'chain': chain, 'start_time': str(start_time), 'page_count': str(page_count)}
-        headers = {'user-agent': UserAgent().chrome}
-        proxy = await get_proxy(proxy=proxies)
-        status_code, json_dict = await async_get(Entrypoints.PUBLIC.HISTORY + 'list', params=params, headers=headers,
-                                                 proxy=proxy)
+        status_code, json_dict = await async_get(Entrypoints.PUBLIC.HISTORY + 'list', params=params,
+                                                 headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
         await check_response(status_code=status_code, json_dict=json_dict)
         data = json_dict['data']
 
@@ -34,10 +30,8 @@ async def list_(address: str, chain: ChainNames or str = '', start_time: int or 
         for page_count in page_counts:
             params = {'user_addr': address, 'chain': chain, 'start_time': str(start_time),
                       'page_count': str(page_count)}
-            headers = {'user-agent': UserAgent().chrome}
-            proxy = await get_proxy(proxy=proxies)
             status_code, json_dict = await async_get(Entrypoints.PUBLIC.HISTORY + 'list', params=params,
-                                                     headers=headers, proxy=proxy)
+                                                     headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
             await check_response(status_code=status_code, json_dict=json_dict)
             if data:
                 data['history_list'] += json_dict['data']['history_list']
@@ -67,9 +61,7 @@ async def token_price(token_id: str, chain: ChainNames or str, time_at: Optional
     if time_at:
         params['time_at'] = time_at
 
-    headers = {'user-agent': UserAgent().chrome}
-    proxy = await get_proxy(proxy=proxies)
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.HISTORY + 'token_price', params=params, headers=headers,
-                                             proxy=proxy)
+    status_code, json_dict = await async_get(Entrypoints.PUBLIC.HISTORY + 'token_price', params=params,
+                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
     await check_response(status_code=status_code, json_dict=json_dict)
     return json_dict['data']['price']
