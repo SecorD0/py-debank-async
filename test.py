@@ -136,38 +136,45 @@ class Custom:
                 print(f'{chain_token}\n')
 
 
-async def main():
+async def main() -> None:
     print('\n--------- Asset ---------')
-    await Asset().net_curve_24h(address=checking_address)
+    asset_cls = Asset()
+    await asset_cls.net_curve_24h(address=checking_address)
 
     print('\n--------- History ---------')
-    await History().list_(address=checking_address)
-    await History().token_price(token_id='0xB8c77482e45F1F44dE1745F52C74426C631bDD52', chain=ChainNames.ETHEREUM)
+    history_cls = History()
+    await history_cls.list_(address=checking_address)
+    await history_cls.token_price(token_id='0xB8c77482e45F1F44dE1745F52C74426C631bDD52', chain=ChainNames.ETHEREUM)
 
     print('\n--------- NFT ---------')
-    await NFT().collection_list(address=checking_address, chain=ChainNames.ARBITRUM)
-    await NFT().collection_list(address=checking_address)
-    await NFT().history_collection_list(address=checking_address, chain='arb')
-    await NFT().history_collection_list(address=checking_address)
-    await NFT().history_list(address=checking_address, chain=ChainNames.ARBITRUM)
-    await NFT().used_chains(address=checking_address)
+    nft_cls = NFT()
+    await nft_cls.collection_list(address=checking_address, chain=ChainNames.ARBITRUM)
+    await nft_cls.collection_list(address=checking_address)
+    await nft_cls.history_collection_list(address=checking_address, chain='arb')
+    await nft_cls.history_collection_list(address=checking_address)
+    await nft_cls.history_list(address=checking_address, chain=ChainNames.ARBITRUM)
+    await nft_cls.used_chains(address=checking_address)
 
     print('\n--------- Portfolio ---------')
-    await Portfolio().project_list(address=checking_address)
+    portfolio_cls = Portfolio()
+    await portfolio_cls.project_list(address=checking_address)
 
     print('\n--------- Token ---------')
-    await Token().balance_list(address=checking_address, chain='arb')
-    await Token().cache_balance_list(address=checking_address)
+    token_cls = Token()
+    await token_cls.balance_list(address=checking_address, chain='arb')
+    await token_cls.cache_balance_list(address=checking_address)
 
     print('\n--------- User ---------')
-    await User().addr(address=checking_address)
-    await User().info(address=checking_address)
-    await User().total_balance(address=checking_address)
+    user_cls = User()
+    await user_cls.addr(address=checking_address)
+    await user_cls.info(address=checking_address)
+    await user_cls.total_balance(address=checking_address)
 
     print('\n--------- Custom ---------')
-    await Custom().get_balance(address=checking_address, chain=ChainNames.ARBITRUM)
-    await Custom().get_balance(address=checking_address)
-    await Custom().current_balance_list(address=checking_address)
+    custom_cls = Custom()
+    await custom_cls.get_balance(address=checking_address, chain=ChainNames.ARBITRUM)
+    await custom_cls.get_balance(address=checking_address)
+    await custom_cls.current_balance_list(address=checking_address)
 
 
 if __name__ == '__main__':
