@@ -11,7 +11,9 @@ async def get_headers() -> dict:
     """
     Get headers for a request.
 
-    :return dict: headers
+    Returns:
+        dict: headers.
+
     """
     return {
         'accept': '*/*',
@@ -25,10 +27,14 @@ async def get_headers() -> dict:
 
 async def get_proxy(proxy: Optional[str or List[str]] = None) -> Optional[str]:
     """
-    Choose a proxy for a request.
+    Construct a proxy dictionary for use in the 'requests' library.
 
-    :param Optional[str or List[str]] proxy: an HTTP proxy or a proxy list for random choice for making a request (None)
-    :return Optional[dict]: the proxy dictionary with the selected proxy
+    Args:
+        proxy (Optional[str or List[str]]): an HTTP proxy or a proxy list for random choice for making a request. (None)
+
+    Returns:
+        Optional[dict]: the proxy dictionary with the selected proxy.
+
     """
     if not proxy:
         return
@@ -52,8 +58,10 @@ async def check_response(status_code: int, json_response: dict) -> None:
     """
     Check if a request was sent successfully.
 
-    :param int status_code: the request status code
-    :param dict json_response: a JSON dictionary retrieved from the request
+    Args:
+        status_code (int): the request status code.
+        json_response (dict): a JSON dictionary retrieved from the request.
+
     """
     if status_code != 200:
         raise exceptions.DebankException(status_code=status_code)
@@ -66,11 +74,15 @@ async def async_get(url: str, params: dict, headers: dict, proxy: str) -> Tuple[
     """
     Make asynchronous GET request.
 
-    :param str url: a URL
-    :param dict params: params for the request
-    :param dict headers: headers for the request
-    :param str proxy: an HTTP proxy in the format: http://user:password@ip:port
-    :return Tuple[int, dict]: a status code of the request and a parsed JSON dictionary
+    Args:
+        url (str): a URL.
+        params (dict): params for the request.
+        headers (dict): headers for the request.
+        proxy (str): an HTTP proxy in the format: http://user:password@ip:port
+
+    Returns:
+        Tuple[int, dict]: a status code of the request and a parsed JSON dictionary.
+
     """
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(url, params=params, proxy=proxy) as response:
