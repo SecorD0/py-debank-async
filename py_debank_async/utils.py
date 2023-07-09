@@ -48,18 +48,18 @@ async def get_proxy(proxy: Optional[str or List[str]] = None) -> Optional[str]:
     return proxy
 
 
-async def check_response(status_code: int, json_dict: dict) -> None:
+async def check_response(status_code: int, json_response: dict) -> None:
     """
     Check if a request was sent successfully.
 
     :param int status_code: the request status code
-    :param dict json_dict: a JSON dictionary retrieved from the request
+    :param dict json_response: a JSON dictionary retrieved from the request
     """
     if status_code != 200:
         raise exceptions.DebankException(status_code=status_code)
 
-    if json_dict['error_code']:
-        raise exceptions.DebankException(status_code=status_code, error_msg=json_dict['error_msg'])
+    if json_response['error_code']:
+        raise exceptions.DebankException(status_code=status_code, error_msg=json_response['error_msg'])
 
 
 async def async_get(url: str, params: dict, headers: dict, proxy: str) -> Tuple[int, dict]:
@@ -76,9 +76,9 @@ async def async_get(url: str, params: dict, headers: dict, proxy: str) -> Tuple[
         async with session.get(url, params=params, proxy=proxy) as response:
             status = response.status
             if status == 200:
-                json_dict = await response.json()
+                json_response = await response.json()
 
             else:
-                json_dict = {}
+                json_response = {}
 
-            return status, json_dict
+            return status, json_response

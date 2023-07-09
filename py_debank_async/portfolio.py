@@ -4,8 +4,9 @@ from py_debank_async.models import Entrypoints, Chain
 from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
-async def project_list(address: str, raw_data: bool = False,
-                       proxies: Optional[str or List[str]] = None) -> Dict[str, Chain] or Dict[str, dict]:
+async def project_list(
+        address: str, raw_data: bool = False, proxies: Optional[str or List[str]] = None
+) -> Dict[str, Chain] or Dict[str, dict]:
     """
     Get projects where the account's assets are located (liquidity, staking, etc.)
 
@@ -18,12 +19,16 @@ async def project_list(address: str, raw_data: bool = False,
         'bsc': Chain(..., projects=...)
     }
     """
-    params = {'user_addr': address}
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.PORTFOLIO + 'project_list', params=params,
-                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-    await check_response(status_code=status_code, json_dict=json_dict)
+    params = {
+        'user_addr': address
+    }
+    status_code, json_response = await async_get(
+        url=Entrypoints.PUBLIC.PORTFOLIO + 'project_list', params=params, headers=await get_headers(),
+        proxy=await get_proxy(proxy=proxies)
+    )
+    await check_response(status_code=status_code, json_response=json_response)
     chain_dict = {}
-    for token in json_dict['data']:
+    for token in json_response['data']:
         chain = token['chain']
         if chain in chain_dict:
             chain_dict[chain].append(token)
@@ -37,7 +42,8 @@ async def project_list(address: str, raw_data: bool = False,
         for chain in sorted(chain_list, key=lambda chain: chain.usd_value, reverse=True):
             chain_dict[chain.name] = chain
 
-        chain_dict = {key: value for key, value in
-                      sorted(chain_dict.items(), key=lambda item: item[1].usd_value, reverse=True)}
+        chain_dict = {
+            key: value for key, value in sorted(chain_dict.items(), key=lambda item: item[1].usd_value, reverse=True)
+        }
 
     return chain_dict

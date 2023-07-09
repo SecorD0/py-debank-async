@@ -5,8 +5,9 @@ from py_debank_async.models import Entrypoints, ChainNames, Chain, ProfitLeaderb
 from py_debank_async.utils import get_proxy, check_response, async_get, get_headers
 
 
-async def collection_list(address: str, chain: ChainNames or str = '', raw_data: bool = False,
-                          proxies: Optional[str or List[str]] = None) -> Dict[str, Chain] or Dict[str, dict]:
+async def collection_list(
+        address: str, chain: ChainNames or str = '', raw_data: bool = False, proxies: Optional[str or List[str]] = None
+) -> Dict[str, Chain] or Dict[str, dict]:
     """
     Get owned collections (raw data) or NFTs by an address.
 
@@ -24,15 +25,19 @@ async def collection_list(address: str, chain: ChainNames or str = '', raw_data:
     if chain:
         proxy = await get_proxy(proxy=proxies)
         for i in range(3):
-            params = {'user_addr': address, 'chain': chain}
-            status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'collection_list', params=params,
-                                                     headers=await get_headers(), proxy=proxy)
-            await check_response(status_code=status_code, json_dict=json_dict)
-            if json_dict['data']['job']:
+            params = {
+                'user_addr': address,
+                'chain': chain
+            }
+            status_code, json_response = await async_get(
+                url=Entrypoints.PUBLIC.NFT + 'collection_list', params=params, headers=await get_headers(), proxy=proxy
+            )
+            await check_response(status_code=status_code, json_response=json_response)
+            if json_response['data']['job']:
                 await asyncio.sleep(3)
 
             else:
-                chain_dict[chain] = json_dict['data']['result']['data']
+                chain_dict[chain] = json_response['data']['result']['data']
                 break
 
     else:
@@ -40,15 +45,20 @@ async def collection_list(address: str, chain: ChainNames or str = '', raw_data:
         for chain in chains:
             proxy = await get_proxy(proxy=proxies)
             for i in range(3):
-                params = {'user_addr': address, 'chain': chain}
-                status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'collection_list', params=params,
-                                                         headers=await get_headers(), proxy=proxy)
-                await check_response(status_code=status_code, json_dict=json_dict)
-                if json_dict['data']['job']:
+                params = {
+                    'user_addr': address,
+                    'chain': chain
+                }
+                status_code, json_response = await async_get(
+                    url=Entrypoints.PUBLIC.NFT + 'collection_list', params=params, headers=await get_headers(),
+                    proxy=proxy
+                )
+                await check_response(status_code=status_code, json_response=json_response)
+                if json_response['data']['job']:
                     await asyncio.sleep(3)
 
                 else:
-                    chain_dict[chain] = json_dict['data']['result']['data']
+                    chain_dict[chain] = json_response['data']['result']['data']
                     break
 
     if not raw_data:
@@ -60,8 +70,9 @@ async def collection_list(address: str, chain: ChainNames or str = '', raw_data:
     return chain_dict
 
 
-async def history_collection_list(address: str, chain: ChainNames or str = '',
-                                  proxies: Optional[str or List[str]] = None) -> Dict[str, ProfitLeaderboard]:
+async def history_collection_list(
+        address: str, chain: ChainNames or str = '', proxies: Optional[str or List[str]] = None
+) -> Dict[str, ProfitLeaderboard]:
     """
     Get a profit leaderboard for all the NFT collections the address has ever owned.
 
@@ -78,15 +89,20 @@ async def history_collection_list(address: str, chain: ChainNames or str = '',
     if chain:
         proxy = await get_proxy(proxy=proxies)
         for i in range(3):
-            params = {'user_addr': address, 'chain': chain}
-            status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_collection_list', params=params,
-                                                     headers=await get_headers(), proxy=proxy)
-            await check_response(status_code=status_code, json_dict=json_dict)
-            if json_dict['data']['job']:
+            params = {
+                'user_addr': address,
+                'chain': chain
+            }
+            status_code, json_response = await async_get(
+                url=Entrypoints.PUBLIC.NFT + 'history_collection_list', params=params, headers=await get_headers(),
+                proxy=proxy
+            )
+            await check_response(status_code=status_code, json_response=json_response)
+            if json_response['data']['job']:
                 await asyncio.sleep(3)
 
             else:
-                profit_dict[chain] = json_dict['data']['result']['data']
+                profit_dict[chain] = json_response['data']['result']['data']
                 break
 
     else:
@@ -94,15 +110,20 @@ async def history_collection_list(address: str, chain: ChainNames or str = '',
         for chain in chains:
             proxy = await get_proxy(proxy=proxies)
             for i in range(3):
-                params = {'user_addr': address, 'chain': chain}
-                status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_collection_list',
-                                                         params=params, headers=await get_headers(), proxy=proxy)
-                await check_response(status_code=status_code, json_dict=json_dict)
-                if json_dict['data']['job']:
+                params = {
+                    'user_addr': address,
+                    'chain': chain
+                }
+                status_code, json_response = await async_get(
+                    url=Entrypoints.PUBLIC.NFT + 'history_collection_list', params=params, headers=await get_headers(),
+                    proxy=proxy
+                )
+                await check_response(status_code=status_code, json_response=json_response)
+                if json_response['data']['job']:
                     await asyncio.sleep(3)
 
                 else:
-                    profit_dict[chain] = json_dict['data']['result']['data']
+                    profit_dict[chain] = json_response['data']['result']['data']
                     break
 
     profit_list = []
@@ -117,8 +138,9 @@ async def history_collection_list(address: str, chain: ChainNames or str = '',
     return profit_dict
 
 
-async def history_list(address: str, chain: ChainNames or str = '',
-                       proxies: Optional[str or List[str]] = None) -> Dict[str, NFTHistory] or Dict[str, dict]:
+async def history_list(
+        address: str, chain: ChainNames or str = '', proxies: Optional[str or List[str]] = None
+) -> Dict[str, NFTHistory] or Dict[str, dict]:
     """
     Get a NFT transaction history of an address.
 
@@ -142,10 +164,12 @@ async def history_list(address: str, chain: ChainNames or str = '',
             'page_count': '20',
             'direction': '',
         }
-        status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_list', params=params,
-                                                 headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-        await check_response(status_code=status_code, json_dict=json_dict)
-        history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_dict['data'])
+        status_code, json_response = await async_get(
+            url=Entrypoints.PUBLIC.NFT + 'history_list', params=params, headers=await get_headers(),
+            proxy=await get_proxy(proxy=proxies)
+        )
+        await check_response(status_code=status_code, json_response=json_response)
+        history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_response['data'])
 
     else:
         chains = await used_chains(address=address, proxies=proxies)
@@ -159,10 +183,12 @@ async def history_list(address: str, chain: ChainNames or str = '',
                 'page_count': '20',
                 'direction': '',
             }
-            status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'history_list', params=params,
-                                                     headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-            await check_response(status_code=status_code, json_dict=json_dict)
-            history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_dict['data'])
+            status_code, json_response = await async_get(
+                url=Entrypoints.PUBLIC.NFT + 'history_list', params=params, headers=await get_headers(),
+                proxy=await get_proxy(proxy=proxies)
+            )
+            await check_response(status_code=status_code, json_response=json_response)
+            history_dict[chain] = NFTHistory(chain=chain, address=address, data=json_response['data'])
 
     return history_dict
 
@@ -175,8 +201,12 @@ async def used_chains(address: str, proxies: Optional[str or List[str]] = None) 
     :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
     :return List[str]: chains
     """
-    params = {'user_addr': address}
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.NFT + 'used_chains', params=params,
-                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-    await check_response(status_code=status_code, json_dict=json_dict)
-    return json_dict['data']
+    params = {
+        'user_addr': address
+    }
+    status_code, json_response = await async_get(
+        url=Entrypoints.PUBLIC.NFT + 'used_chains', params=params, headers=await get_headers(),
+        proxy=await get_proxy(proxy=proxies)
+    )
+    await check_response(status_code=status_code, json_response=json_response)
+    return json_response['data']

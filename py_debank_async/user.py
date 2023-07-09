@@ -12,11 +12,15 @@ async def addr(address: str, proxies: Optional[str or List[str]] = None) -> User
     :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
     :return User: the DeBank user
     """
-    params = {'addr': address}
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'addr', params=params,
-                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-    await check_response(status_code=status_code, json_dict=json_dict)
-    return User(data=json_dict['data'])
+    params = {
+        'addr': address
+    }
+    status_code, json_response = await async_get(
+        url=Entrypoints.PUBLIC.USER + 'addr', params=params, headers=await get_headers(),
+        proxy=await get_proxy(proxy=proxies)
+    )
+    await check_response(status_code=status_code, json_response=json_response)
+    return User(data=json_response['data'])
 
 
 async def info(address: str, proxies: Optional[str or List[str]] = None) -> Info:
@@ -27,11 +31,15 @@ async def info(address: str, proxies: Optional[str or List[str]] = None) -> Info
     :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
     :return Info: the information about the DeBank user
     """
-    params = {'id': address}
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.ENTRYPOINT + 'hi/user/info', params=params,
-                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-    await check_response(status_code=status_code, json_dict=json_dict)
-    return Info(data=json_dict['data'])
+    params = {
+        'id': address
+    }
+    status_code, json_response = await async_get(
+        url=Entrypoints.PUBLIC.ENTRYPOINT + 'hi/user/info', params=params, headers=await get_headers(),
+        proxy=await get_proxy(proxy=proxies)
+    )
+    await check_response(status_code=status_code, json_response=json_response)
+    return Info(data=json_response['data'])
 
 
 async def total_balance(address: str, proxies: Optional[str or List[str]] = None) -> float:
@@ -42,8 +50,12 @@ async def total_balance(address: str, proxies: Optional[str or List[str]] = None
     :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
     :return float: the total balance
     """
-    params = {'addr': address}
-    status_code, json_dict = await async_get(Entrypoints.PUBLIC.USER + 'total_balance', params=params,
-                                             headers=await get_headers(), proxy=await get_proxy(proxy=proxies))
-    await check_response(status_code=status_code, json_dict=json_dict)
-    return json_dict['data']['total_usd_value']
+    params = {
+        'addr': address
+    }
+    status_code, json_response = await async_get(
+        url=Entrypoints.PUBLIC.USER + 'total_balance', params=params, headers=await get_headers(),
+        proxy=await get_proxy(proxy=proxies)
+    )
+    await check_response(status_code=status_code, json_response=json_response)
+    return json_response['data']['total_usd_value']

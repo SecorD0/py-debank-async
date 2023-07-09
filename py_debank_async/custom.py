@@ -8,8 +8,9 @@ from py_debank_async.token import balance_list
 from py_debank_async.user import addr
 
 
-async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: bool = True,
-                      proxies: Optional[str or List[str]] = None) -> Dict[str, Chain]:
+async def get_balance(
+        address: str, chain: ChainNames or str = '', parse_nfts: bool = True, proxies: Optional[str or List[str]] = None
+) -> Dict[str, Chain]:
     """
     Get the following information of an address of one or all chains:
     - token balances
@@ -17,7 +18,7 @@ async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: b
     - owned NFTs
 
     :param str address: the address
-    :param ChainNames or st chain: the chain (all chains)
+    :param ChainNames or str chain: the chain (all chains)
     :param bool parse_nfts: whether to parse NFT, it leads to a high probability of "429 Too Many Requests" error (True)
     :param Optional[str or List[str]] proxies: an HTTP proxy or a proxy list for random choice for making a request (None)
     :return Chain: the address information
@@ -61,8 +62,9 @@ async def get_balance(address: str, chain: ChainNames or str = '', parse_nfts: b
     return chains
 
 
-async def current_balance_list(address: str, raw_data: bool = False,
-                               proxies: Optional[str or List[str]] = None) -> Dict[str, Chain] or Dict[str, dict]:
+async def current_balance_list(
+        address: str, raw_data: bool = False, proxies: Optional[str or List[str]] = None
+) -> Dict[str, Chain] or Dict[str, dict]:
     """
     Get current token balances of an address of all chains.
 
@@ -83,7 +85,8 @@ async def current_balance_list(address: str, raw_data: bool = False,
             chain_dict[chain] = balance
 
     if not raw_data:
-        chain_dict = {key: value for key, value in
-                      sorted(chain_dict.items(), key=lambda item: item[1].usd_value, reverse=True)}
+        chain_dict = {
+            key: value for key, value in sorted(chain_dict.items(), key=lambda item: item[1].usd_value, reverse=True)
+        }
 
     return chain_dict
